@@ -1,0 +1,4 @@
+ConfigParser
+Pillow
+numpy
+selenium

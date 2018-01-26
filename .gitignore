@@ -1,0 +1,28 @@
+#compiled code
+##############
+*.pyc
+
+
+#scripts
+##############
+
+
+
+# Logs and databases 
+####################
+*.log
+*.csv
+
+
+#config
+#######
+config.ini
+
+
+#other
+#######
+go_basshunter.sh
+
+
+#directory
+ss/
