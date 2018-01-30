@@ -41,7 +41,7 @@ def earliest_ss(inPath,ePath):
 	os.chdir(inPath)
 	files = sorted(os.listdir(inPath), key=os.path.getctime)
 	try:
-		a = files[-1]
+		a = files[0]
 	except Exception as e:
 		print "Didn't find a previous image"
 		return 0
@@ -53,7 +53,7 @@ def latest_ss(inPath,ePath):
 	os.chdir(inPath)
 	files = sorted(os.listdir(inPath), key=os.path.getctime)
 	try:
-		a = files[0]
+		a = files[-1]
 	except Exception as e:
 		print "Did not find the latest image, something wrong with save vs find pathing ??"
 		return 0
@@ -65,7 +65,7 @@ def second_latest_ss(inPath,ePath):
 	os.chdir(inPath)
 	files = sorted(os.listdir(inPath), key=os.path.getctime)
 	try:
-		a = files[1]
+		a = files[-2]
 	except Exception as e:
 		print "Did not find a second latest image"
 		return 0
@@ -75,7 +75,7 @@ def second_latest_ss(inPath,ePath):
 
 def write_to_log(value,domain,diff_type,image_url):
 	#try:
-		log=open("dota_log.csv","a")
+		log=open("/opt/bass_hunter/dota_log.csv","a")
 		log.write(domain + "," + str(value) + "," + diff_type + "," + image_url + "\n")
 		log.close()
 	#except:
@@ -136,7 +136,7 @@ def main():
 				print "opening image %s" % l 	
 				latest = array(Image.open(l))
 				value = mse(early,latest)
-				write_to_log(value,d,"orig","http://sneakypete:443/"+d+"/"+fname)
+				write_to_log(value,d,"orig","http://208.186.254.182:443/"+d+"/"+fname)
 				print value
 
 			if l2!=0 and l!=0:
@@ -146,7 +146,7 @@ def main():
 				print "opening image %s" % l 	
 				latest = array(Image.open(l))
 				value = mse(latest_2nd,latest)
-				write_to_log(value,d,"recent","http://sneakypete:443/"+d+"/"+fname)
+				write_to_log(value,d,"recent","http://208.186.254.182:443/"+d+"/"+fname)
 				print value	
 			#print "Finished with %s"% d
 	
