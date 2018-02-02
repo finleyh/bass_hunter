@@ -9,6 +9,7 @@ app = Flask(__name__)
 #define  the base api path
 API_PATH='/api/v1/'
 
+
 print "testing ignore line" #ignoreline
 
 
@@ -28,7 +29,7 @@ def remove_domains():
 	return jsonify({''}), 201
 
 #delete a given domain
-@app.route(API_PATH+'domain/<str:domain>', methods=['DELETE'])
+@app.route(API_PATH+'domains/<str:domain>', methods=['DELETE'])
 
 #/api/v1/domain/$1/images -- list all images
 @app.route(API_PATH+'domain/<str:domain>/images',methods=['GET'])

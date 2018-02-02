@@ -27,3 +27,5 @@ go_basshunter.sh
 
 #directory
 ss/
+#
+*.swp

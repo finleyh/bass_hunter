@@ -20,6 +20,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 Config = ConfigParser.ConfigParser()
 exec_path = os.path.dirname(os.path.realpath(__file__))	
 ss_path = os.path.join(exec_path,'ss')
+ss_locations = []
 
 def img_to_hex(img_path):
 	with open(img_path, 'r') as f:
@@ -77,9 +78,20 @@ def write_to_log(value,domain,diff_type,image_url):
 	#try:
 		log=open("/opt/bass_hunter/dota_log.csv","a")
 		log.write(domain + "," + str(value) + "," + diff_type + "," + image_url + "\n")
+		if diff_type == "recent":
+			ss_locations.append([domain,image_url])
 		log.close()
 	#except:
 	#	print "Failed to open log file"
+
+def create_recent():
+	recent = open(exec_path + "/ss/recent.html","w")
+	recent.write("<font size=10>\n")
+	print ss_locations
+	for locations in ss_locations:
+		recent.write("<center>" + locations[0] + "</center><br>\n")
+		recent.write("<img src=\"" + locations[1].replace(":","%3A").replace("http%3A","http:").replace("%3A443",":443") + "\"><br>\n")
+	recent.close()	
 
 def main():
 	#print "Welcome to DNS hunter"
@@ -151,6 +163,7 @@ def main():
 			#print "Finished with %s"% d
 	
 		#print "I feel ya mon"
+		create_recent()
 		exit(0)
 
 	else:
