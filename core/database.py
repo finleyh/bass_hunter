@@ -86,6 +86,61 @@ class Tag(Base):
 	def __init__(self, name):
 		self.name= name
 
+class Browser(Base):
+    """Configured virtual browsers to be used as guests."""
+    __tablename__ = "browsers"
+
+    id = Column(Integer(), primary_key=True)
+    name = Column(String(255), nullable=False)
+    label = Column(String(255), nullable=False)
+    user_agent = Column(String(255), nullable=False)
+    tags = relationship("Tag", secondary=browsers_tags, single_parent=True,
+                        backref="browser")
+    options = Column(JsonTypeList255(), nullable=True)
+    status = Column(String(255), nullable=True)
+    status_changed_on = Column(DateTime(timezone=False), nullable=True)
+
+    def __repr__(self):
+        return "<Browser('{0}','{1}')>".format(self.id, self.name)
+
+    def to_dict(self):
+        """Converts object to dict.
+        @return: dict
+        """
+        d = {}
+        for column in self.__table__.columns:
+            value = getattr(self, column.name)
+            if isinstance(value, datetime.datetime):
+                d[column.name] = value.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                d[column.name] = value
+
+        # Tags are a relation so no column to iterate.
+        d["tags"] = [tag.name for tag in self.tags]
+        return d
+
+    def to_json(self):
+        """Converts object to JSON.
+        @return: JSON data
+        """
+        return json.dumps(self.to_dict())
+
+    def is_analysis(self):
+        """Is this an analysis browser? Generally speaking all browsers are
+        analysis browsers, however, this is not the case for service VMs.
+        Please refer to the services auxiliary module."""
+        for tag in self.tags:
+            if tag.name == "service":
+                return
+        return True
+
+    def __init__(self, name, label, ip, user_agent, options)
+        self.name = name
+        self.label = label
+        self.ip = ip
+        self.user_agent = user_agent
+        self.options = options
+
 class Crawler(Base):
 	""" Tracks a browser in flight """
 	id = Column(Integer(), primary_key=True)
@@ -142,6 +197,7 @@ class Task(Base):
 	)
 	domain = relationship("Domain", backref="tasks")
 	submit = relationship("Submit", backref="tasks")
+	crawler = relationship("Crawler", backref="tasks")
 	errors = relationship("Error", backref="tasks", cascade="save-update, delete")
 	
 	def duration(self):
@@ -316,7 +372,7 @@ class Database(object):
 			session.close()
 
 	@classlock
-	def fetch(self, machine=None, service=True):
+	def fetch(self, browser=None, service=True):
 		"""
 			go and fetch a domain for testing
 		"""
