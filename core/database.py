@@ -72,6 +72,54 @@ class Domain(Base):
 		self.md5 = hashlib.md5(domain_name)
 		self.sha256 = hashlib.sha256(domain_name)
 
+class Tag(Base):
+	""" Tag for string descriptor """
+	__tablename__ = "tags"
+
+
+	id = Column(Integer(), primary_key=True)
+	name = Column(String(255), nullable=False, unique=True)
+
+	def __repr__(self):
+		return "<Tag('{0}','{1}')>".format(self.id, self.name)
+
+	def __init__(self, name):
+		self.name= name
+
+class Crawler(Base):
+	""" Tracks a browser in flight """
+	id = Column(Integer(), primary_key=True)
+	status = Column(String(16), nullable=False)
+	name = Column(String(255), nullable=False)
+	user_agent=Column(String(255), nullable=False)
+	started_on = Column(DateTime(timezone=False),
+						default=datetime.datetime.now,
+						nullable=False)
+	shutdown_on = Column(DateTime(timezone=False), nullable=True)
+	task_id = Column(Integer,
+					 ForeignKey("task.id"),
+					 nullable=False,
+					 unique=True)
+
+	def __repr__(self):
+		return "<Crawler('{0}', '{1}')>".format(self.id, self.name)
+	
+	def to_dict(self):
+		d={}
+		for column in self.__table__.columns:
+			value=getattr(self, column.name)
+			if isinstance(value, datetime.datetime):
+				d[column.name]=value.strftime("%Y-%m-%d %H:%M:%S")
+			else:
+				d[column.name] = value
+		return d
+
+	def to_json(self):
+		return json.dumps(self.to_dict())
+
+	def __init__(self, name, user_agent):
+		self.name=name
+		self.user_agent=user_agent
 
 class Task(Base):
 	""" Analysis Tasks """
@@ -182,3 +230,109 @@ class Database(object):
 		if create:
 			self._create_tables()
 	def _create_tables(self):
+		""" Createst database tables """
+		try:
+			Base.metadata.create_all(self.engine)
+		except SQLAlchemyError as e:
+			raise CuckooDatabaseError(
+				"Unable tocreate or connect to database: %s" % e
+			)
+	
+	def __del__(self):
+		""" Disconnects pool."""
+		self.engine.dispose()
+	
+	def _connect_database(self, connection_string):
+		""" Connect to a database
+		@param connection_string: Connection string specifying the databse """
+		try:
+			self.engine=create_engine(connection_string, connect_args={"sslmode":"disable"})
+		except ImportError as e:
+			lib = e.message.split()[-1]
+	
+	def _get_or_create(self, session, model, **kwargs):
+		""" Get an ORM instance or create it if not exist.
+		@param session: SQLAlchemy session object
+		@param model: model to query
+		@return: row instance
+		"""
+		instance = session.query(model).filter_by(**kwargs).first()
+		return instance or model(**kwargs)
+
+	@classlock
+	def drop(self):
+		""" Drop all tables. """
+		try:
+			Base.metadata.drop_all(self.engine)
+		except SQLAlchemyError as e:
+			raise CuckooDatabaseError(
+				"Unable to drop all the tables of the db %s" % e 
+			)
+
+	@classlock
+	def set_status(self, task_id, status):
+		""" set task status 
+		@param task_id: task identifier
+		@param status: status of the task
+		@return: operation status
+		"""
+		session = self.Session()
+		try:
+			row = session.query(Task).get(task_id)
+			if not row:
+				return
+			row.status = status
+			if status == TASK_RUNNING:
+				row.started_on = datetime.datetime.now()
+			elif status == TASK_COMPLETED:
+				row.completed_on = datetime.datetime.now()
+
+			session.commit()
+		except SQLAlchemyError as e:
+			log.debug("database error setting status {0}".format(e))
+			session.rollback()
+		finally:
+			session.close()
+	
+	@classlock
+	def set_route(self, task_id, route):
+		"""Set the taken route of this task.
+		@param task_id: task identifier
+		@param route: route string
+		@return: operation status
+		"""
+		session = self.Session()
+		try:
+			row = session.query(Task).get(task_id)
+			if not row:
+				return
+			
+			row.route= route
+			session.commit()
+		except SQLAlchemyError as e:
+			log.debug("Database error setting route: {0}".format(e))
+			session.rollback()
+		finally:
+			session.close()
+
+	@classlock
+	def fetch(self, machine=None, service=True):
+		"""
+			go and fetch a domain for testing
+		"""
+		session = self.Session()
+		try:
+			q=session.query(Task).filter_by(status=TASK_PENDING)
+		
+			row = q.order_by(Task.priority.desc(), Task.added_on).first()
+			if row:
+				self.set_status(task_id=row.id, status=TASK_RUNNING)
+				session.refresh(row)
+			
+			return row
+		except SQLAlchemyError as e:
+			log.debug("Database error fetching task: {0}".format(e))
+			session.refresh(row)
+		
+		finally:
+			session.close()
