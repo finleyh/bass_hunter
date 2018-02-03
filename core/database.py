@@ -1,10 +1,20 @@
-#
+# heavily borrowing from:
+# Copyright (C) 2012-2013 Claudio Guarnieri.
+# Copyright (C) 2014-2017 Cuckoo Foundation.
+# This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
+# See the file 'docs/LICENSE' for copying permission.
+
 
 import datetime
 import json
 import logging
 import os
 import hashlib
+
+
+from cuckoo.common.utils import SuperLock, json_encode
+from cuckoo.common.utils import Singleton, classlock
+
 
 from sqlalchemy import create_engine, Column, not_, func
 from sqlalchemy import Interger, String, Boolean, DateTime, Enum
@@ -140,4 +150,35 @@ class Database(object):
 	"""Analysis queueu database.
 		
 	this class handles the creation of the database user for internal queue management, and provides functions for interacting with it """
-	__metaclass__=Singleton
+	__metaclass__ = Singleton
+	
+	def __init__(self, echo=False):
+		"""
+		@param dsn: database connection string.
+		@param schema_check: disable or enable the db schema version check.
+		@param echo: echo sql queries
+		"""
+		self._lock = SuperLock()
+		self.schema_check = None
+		self.echo = echo
+	
+	def connect(self, dsn=None, create=True):
+		""" Connect to the database backend"""
+		
+		if not dsn:
+			dsn = config("dota:database:connection")
+		if not dsn:
+			print "database connection information not found in config file. exiting"
+		
+		self._connect_database(dsn)
+		#echo is for debugging
+		self.engine.echo = self.echo
+		#connection timeout
+		self.engine.pool_timeout = config("cuckoo:database:timeout")
+	
+		#get db session
+		self.Session = sessionmaker(bind=self.engine)
+		
+		if create:
+			self._create_tables()
+	def _create_tables(self):
