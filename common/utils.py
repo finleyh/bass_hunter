@@ -23,8 +23,8 @@ import xmlrpclib
 from distutils.version import StrictVersion
 from django.core.validators import URLValidator
 
-from cuckoo.common.constants import GITHUB_URL, ISSUES_PAGE_URL
-from cuckoo.misc import cwd, version
+from common.constants import GITHUB_URL, ISSUES_PAGE_URL
+from misc import cwd, version
 
 log = logging.getLogger(__name__)
 

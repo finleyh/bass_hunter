@@ -19,12 +19,11 @@ try:
 except ImportError:
     HAVE_PWD = False
 
-import cuckoo
 
-from cuckoo.common.defines import (
+from common.defines import (
     WIN_PROCESS_QUERY_INFORMATION, WIN_ERR_STILL_ALIVE
 )
-from cuckoo.common.exceptions import CuckooStartupError
+from common.exceptions import CuckooStartupError
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +34,8 @@ _raw = None
 # This normalizes the installed version of Cuckoo to a regular minor version.
 # That is, both 2.0.4.2 and 2.0.4 return version 2.0.4, avoiding issues with
 # distutils later on.
-version = ".".join(pkg_resources.require("Cuckoo")[0].version.split(".")[:3])
+#version = ".".join(pkg_resources.require("Cuckoo")[0].version.split(".")[:3])
+version = 0
 
 def set_cwd(path, raw=None):
     global _root, _raw

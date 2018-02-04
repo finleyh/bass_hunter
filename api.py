@@ -1,4 +1,21 @@
-from flask import Flask
+#!/usr/bin/env python
+import datetime
+import hashlib
+import io
+import multiprocessing
+import os
+import socket
+import tarfile
+import zipfile
+
+from flask import Flask, request, jsonify 
+
+from core.database import Database, Task
+from core.database import REPORTED, COMPLETED, RUNNING
+
+
+db=Database()
+
 
 app = Flask(__name__)
 
@@ -29,13 +46,13 @@ def remove_domains():
 	return jsonify({''}), 201
 
 #delete a given domain
-@app.route(API_PATH+'domains/<str:domain>', methods=['DELETE'])
+@app.route(API_PATH+'domains/<domain>', methods=['DELETE'])
 
 #/api/v1/domain/$1/images -- list all images
-@app.route(API_PATH+'domain/<str:domain>/images',methods=['GET'])
+@app.route(API_PATH+'domain/<domain>/images',methods=['GET'])
 def show_domain_images():
 	return jsonify({''}), 201
 
 
-if__name__=='__main__':
+if __name__=='__main__':
 	app.run(debug=True)
