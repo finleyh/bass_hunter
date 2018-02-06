@@ -34,19 +34,64 @@ print "testing ignore line" #ignoreline
 def index():
 	return "Testing: Hello, World!"
 #/api/v1/domains
-# list domains
+#
+#     DOMAINS
+#
+#read domains
 @app.route(API_PATH+'domains', methods=['GET'])
 def list_domains():
 	#TODO list domains
 	return jsonify({''}), 201
 
-#create a new domain to monitor
+#create domain
 @app.route(API_PATH+'domains', methods=['POST'])
 def remove_domains():
 	return jsonify({''}), 201
 
-#delete a given domain
+#delete a domain
 @app.route(API_PATH+'domains/<domain>', methods=['DELETE'])
+def add_domain():
+	return jsonify({''}), 201
+
+#
+# Browser
+#
+
+@app.route(API_PATH+'browsers',method=['GET'])
+def list_browsers():
+	return jsonify({''}), 201
+
+#create browser
+@app.route(API_PATH+'browsers', methods=['POST'])
+def remove_browsers():
+	return jsonify({''}), 201
+
+#delete a browser
+@app.route(API_PATH+'browsers/<browser_name>', methods=['DELETE'])
+def add_browser():
+	#browser needs to accept a label, user_agent
+	return jsonify({''}), 201
+
+
+#
+# Tasks
+#
+
+
+@app.route(API_PATH+'tasks',method=['GET'])
+def list_tasks():
+	return jsonify({''}), 201
+
+#create task
+@app.route(API_PATH+'tasks', methods=['POST'])
+def remove_tasks():
+	return jsonify({''}), 201
+
+
+#
+# images
+#
+
 
 #/api/v1/domain/$1/images -- list all images
 @app.route(API_PATH+'domain/<domain>/images',methods=['GET'])
