@@ -21,6 +21,9 @@ class CuckooConfigurationError(CuckooCriticalError):
 class CuckooOperationalError(Exception):
     """Cuckoo operation error."""
 
+class BassHunterConfigError(Exception):
+    """Basshunter operation error: configuration error"""
+
 class CuckooMachineError(CuckooOperationalError):
     """Error managing analysis machine."""
 
