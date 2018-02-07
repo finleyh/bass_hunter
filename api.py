@@ -11,6 +11,7 @@ import ConfigParser
 
 from flask import Flask, request, jsonify 
 
+from common.constants import API_PATH
 from core.database import Database, Task
 from core.database import REPORTED, COMPLETED, RUNNING
 
@@ -35,7 +36,7 @@ app = Flask(__name__)
 #db conn string here    #ignoreline
 
 #define  the base api path
-API_PATH='/api/v1/'
+API_=API_PATH
 
 
 print "testing ignore line" #ignoreline
@@ -49,18 +50,18 @@ def index():
 #     DOMAINS
 #
 #read domains
-@app.route(API_PATH+'domains', methods=['GET'])
+@app.route(API_+'domains', methods=['GET'])
 def list_domains():
 	#TODO list domains
 	return jsonify({''}), 201
 
 #create domain
-@app.route(API_PATH+'domains', methods=['POST'])
+@app.route(API_+'domains', methods=['POST'])
 def remove_domains():
 	return jsonify({''}), 201
 
 #delete a domain
-@app.route(API_PATH+'domains/<domain>', methods=['DELETE'])
+@app.route(API_+'domains/<domain>', methods=['DELETE'])
 def add_domain():
 	return jsonify({''}), 201
 
@@ -68,17 +69,17 @@ def add_domain():
 # Browser
 #
 
-@app.route(API_PATH+'browsers',methods=['GET'])
+@app.route(API_+'browsers',methods=['GET'])
 def list_browsers():
 	return jsonify({''}), 201
 
 #create browser
-@app.route(API_PATH+'browsers', methods=['POST'])
+@app.route(API_+'browsers', methods=['POST'])
 def remove_browsers():
 	return jsonify({''}), 201
 
 #delete a browser
-@app.route(API_PATH+'browsers/<browser_name>', methods=['DELETE'])
+@app.route(API_+'browsers/<browser_name>', methods=['DELETE'])
 def add_browser():
 	#browser needs to accept a label, user_agent
 	return jsonify({''}), 201
@@ -89,12 +90,12 @@ def add_browser():
 #
 
 
-@app.route(API_PATH+'tasks',methods=['GET'])
+@app.route(API_+'tasks',methods=['GET'])
 def list_tasks():
 	return jsonify({''}), 201
 
 #create task
-@app.route(API_PATH+'tasks', methods=['POST'])
+@app.route(API_+'tasks', methods=['POST'])
 def remove_tasks():
 	return jsonify({''}), 201
 
@@ -105,7 +106,7 @@ def remove_tasks():
 
 
 #/api/v1/domain/$1/images -- list all images
-@app.route(API_PATH+'domain/<domain>/images',methods=['GET'])
+@app.route(API_+'domain/<domain>/images',methods=['GET'])
 def show_domain_images():
 	return jsonify({''}), 201
 
