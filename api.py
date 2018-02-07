@@ -7,6 +7,7 @@ import os
 import socket
 import tarfile
 import zipfile
+import ConfigParser
 
 from flask import Flask, request, jsonify 
 
@@ -15,6 +16,16 @@ from core.database import REPORTED, COMPLETED, RUNNING
 
 
 db=Database()
+Config = ConfigParser.ConfigParser()
+
+def loadconfig():
+	try:
+		exec_path = os.path.dirname(os.path.realpath(__file__))	
+		Config.read(os.path.join(exec_path,'config.ini'))
+	except Exception as e:
+		print "An error has occured"+str(e)
+	finally:
+		return
 
 
 app = Flask(__name__)
@@ -57,7 +68,7 @@ def add_domain():
 # Browser
 #
 
-@app.route(API_PATH+'browsers',method=['GET'])
+@app.route(API_PATH+'browsers',methods=['GET'])
 def list_browsers():
 	return jsonify({''}), 201
 
@@ -78,7 +89,7 @@ def add_browser():
 #
 
 
-@app.route(API_PATH+'tasks',method=['GET'])
+@app.route(API_PATH+'tasks',methods=['GET'])
 def list_tasks():
 	return jsonify({''}), 201
 

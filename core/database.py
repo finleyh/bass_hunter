@@ -297,7 +297,7 @@ class Database(object):
 		#echo is for debugging
 		self.engine.echo = self.echo
 		#connection timeout
-		self.engine.pool_timeout = config("cuckoo:database:timeout")
+		self.engine.pool_timeout = config("dota:database:timeout")
 	
 		#get db session
 		self.Session = sessionmaker(bind=self.engine)

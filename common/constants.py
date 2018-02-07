@@ -3,15 +3,16 @@
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
-#CUCKOO_GUEST_PORT = 8000
-#CUCKOO_GUEST_INIT = 0x001
-#CUCKOO_GUEST_RUNNING = 0x002
-#CUCKOO_GUEST_COMPLETED = 0x003
-#CUCKOO_GUEST_FAILED = 0x004
-#GITHUB_URL = "https://github.com/"
-#ISSUES_PAGE_URL = "https://github.com/cuckoosandbox/cuckoo/issues"
-#DOCS_URL = "https://cuckoo.sh/docs"
+CUCKOO_GUEST_PORT = 8000
+CUCKOO_GUEST_INIT = 0x001
+CUCKOO_GUEST_RUNNING = 0x002
+CUCKOO_GUEST_COMPLETED = 0x003
+CUCKOO_GUEST_FAILED = 0x004
+GITHUB_URL = "https://github.com/"
+ISSUES_PAGE_URL = "https://github.com/finleyh/bass_hunter/issues"
+DOCS_URL = "https://github.com/finleyh/bass_hunter/wiki"
 BASS_HUNTER_ROOT="/opt/bass_hunter/"
+API_PATH="/api/v1/"
 
 def faq(entry):
     return "%s/faq/index.html#%s" % (DOCS_URL, entry)
