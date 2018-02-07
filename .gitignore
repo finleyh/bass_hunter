@@ -18,7 +18,8 @@
 #config
 #######
 config.ini
-
+*.ini
+conf/
 
 #other
 #######
@@ -29,3 +30,4 @@ go_basshunter.sh
 ss/
 #
 *.swp
+*.swo

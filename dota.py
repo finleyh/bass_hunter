@@ -14,13 +14,17 @@ import datetime
 from numpy import array
 import numpy as np
 import binascii
+
+
 from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 Config = ConfigParser.ConfigParser()
 exec_path = os.path.dirname(os.path.realpath(__file__))	
 ss_path = os.path.join(exec_path,'ss')
 ss_locations = []
+box = (0, 0, 1366, 728)
 
 def img_to_hex(img_path):
 	with open(img_path, 'r') as f:
@@ -100,14 +104,8 @@ def main():
    		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/53 "
     	"(KHTML, like Gecko) Chrome/15.0.87"
 	)
-	service_args = [
-    '--proxy=127.0.0.1:8080',
-    '--proxy-type=http',
-    ]
-#	driver = webdriver.PhantomJS(desired_capabilities=dcap,service_args=service_args)
-	driver = webdriver.PhantomJS(desired_capabilities=dcap)
+	
 
-	driver.set_window_size(1366, 728)
 	path=find_config(exec_path)
 	if path!=0: 
 		Config.read(path)		
@@ -116,22 +114,32 @@ def main():
 		st = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')	
 
 		for d in domain_list:
-			#print "Testing domain: "+d
-			save_path=os.path.join(ss_path,d)
-			#does the domain have a folder in ss ? no ? create one
-			if not os.path.exists(save_path):
-				os.makedirs(save_path) 
-				
-			#driver go to page, and buffer a ss of the website
-			driver.get('http://'+d)
-			screen = driver.get_screenshot_as_png()
-			#crop the screen and save the image to the appropriate dir
-			box = (0, 0, 1366, 728)
-			im = Image.open(StringIO.StringIO(screen))
-			region = im.crop(box)
-			fname='screenshot_'+d+'_'+st+'.png'
-			print "Saving screenshot of %s to disk as %s" % (d,fname)
-			region.save(os.path.join(save_path,fname), 'PNG', optimize=True, quality=96)
+			try:
+				cookiefile = "--cookies-file=/opt/bass_hunter/cookies.txt"
+				service_args = [cookiefile,]
+				driver = webdriver.PhantomJS(desired_capabilities=dcap,service_args=service_args)
+				driver.set_window_size(1366, 728)
+
+				#print "Testing domain: "+d
+				save_path=os.path.join(ss_path,d)
+				#does the domain have a folder in ss ? no ? create one
+				if not os.path.exists(save_path):
+					os.makedirs(save_path) 
+					
+				#driver go to page, and buffer a ss of the website
+				driver.get('http://'+d)
+				wait = WebDriverWait(driver, 5)
+				screen = driver.get_screenshot_as_png()
+				#crop the screen and save the image to the appropriate dir
+				im = Image.open(StringIO.StringIO(screen))
+				region = im.crop(box)
+				fname='screenshot_'+d+'_'+st+'.png'
+				print "Saving screenshot of %s to disk as %s" % (d,fname)
+				region.save(os.path.join(save_path,fname), 'PNG', optimize=True, quality=96)
+			except Exception as e:
+				print "An error has occured %s" % str(e)
+			finally:
+				driver.quit()
 
 			print "Mean Standard Error (further from 0, more variation) for %s " % d
 			#find the earliest and latest files in each path
