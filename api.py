@@ -13,7 +13,6 @@ from flask import Flask, request, jsonify
 
 from common.constants import API_PATH
 from core.database import Database, Task
-from core.database import REPORTED, COMPLETED, RUNNING
 
 
 db=Database()
@@ -57,46 +56,27 @@ def list_domains():
 
 #create domain
 @app.route(API_+'domains', methods=['POST'])
-def remove_domains():
+def add_domains():
 	return jsonify({''}), 201
 
 #delete a domain
 @app.route(API_+'domains/<domain>', methods=['DELETE'])
-def add_domain():
-	return jsonify({''}), 201
-
-#
-# Browser
-#
-
-@app.route(API_+'browsers',methods=['GET'])
-def list_browsers():
-	return jsonify({''}), 201
-
-#create browser
-@app.route(API_+'browsers', methods=['POST'])
-def remove_browsers():
-	return jsonify({''}), 201
-
-#delete a browser
-@app.route(API_+'browsers/<browser_name>', methods=['DELETE'])
-def add_browser():
-	#browser needs to accept a label, user_agent
+def remove_domain():
 	return jsonify({''}), 201
 
 
 #
-# Tasks
+# Results
 #
 
 
-@app.route(API_+'tasks',methods=['GET'])
-def list_tasks():
+@app.route(API_+'results',methods=['GET'])
+def list_results():
+	#only list the results of testing for the current day
 	return jsonify({''}), 201
 
-#create task
-@app.route(API_+'tasks', methods=['POST'])
-def remove_tasks():
+@app.route(API_+'results/<dtstring>',methods=['GET'])
+def list_specific_tasks(dtstring):
 	return jsonify({''}), 201
 
 
@@ -106,10 +86,18 @@ def remove_tasks():
 
 
 #/api/v1/domain/$1/images -- list all images
-@app.route(API_+'domain/<domain>/images',methods=['GET'])
-def show_domain_images():
+@app.route(API_+'images/<domain>',methods=['GET'])
+def images_by_domain(domain):
+	#return only a few per page
 	return jsonify({''}), 201
 
+@app.route(API_+'images/<sha256>',methods=['GET'])
+def images_by_hash(sha256):
+	return jsonify({''}),201
+
+@app.route(API_+'images/<dtstring>',methods=['GET'])
+	def images_by_date(dtstring):
+		return jsonify({''}),201
 
 if __name__=='__main__':
 	app.run(debug=True)
