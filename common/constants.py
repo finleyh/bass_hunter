@@ -3,11 +3,6 @@
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
-CUCKOO_GUEST_PORT = 8000
-CUCKOO_GUEST_INIT = 0x001
-CUCKOO_GUEST_RUNNING = 0x002
-CUCKOO_GUEST_COMPLETED = 0x003
-CUCKOO_GUEST_FAILED = 0x004
 GITHUB_URL = "https://github.com/"
 ISSUES_PAGE_URL = "https://github.com/finleyh/bass_hunter/issues"
 DOCS_URL = "https://github.com/finleyh/bass_hunter/wiki"
