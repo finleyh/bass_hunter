@@ -31,3 +31,5 @@ ss/
 #
 *.swp
 *.swo
+# notes on files
+api.txt
