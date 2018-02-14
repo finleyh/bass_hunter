@@ -1,0 +1,137 @@
+import datetime
+import hashlib
+import io
+import multiprocessing
+import os
+import socket
+import tarfile
+import zipfile
+import ConfigParser
+import datetime
+
+
+from sqlalchemy import Table, Column, Integer, String, Boolean, MetaData, ForeignKey, DateTime
+
+from flask import Flask, request, jsonify 
+
+from common.constants import API_PATH
+
+
+def make_random():
+	random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
+	return hashlib.md5(random)
+
+Config = ConfigParser.ConfigParser()
+exec_path = os.path.dirname(os.path.realpath(__file__))	
+Config.read(os.path.join(exec_path,'conf','config.ini'))
+dburi = Config.get('database','url')
+
+metadata = MetaData()
+
+domains = Table('domains'
+images = Table('images',metadata,
+	Column('id', Integer, primary_key=True),
+	Column('domain_id', Integer, ForeignKey('domains.id')),
+	Column('image_hash',String, nullable=False),
+	Column('ocr_data',String),
+	Column('added', Datetime, default=datetime.datetime.now()),
+	Column('tags', String)
+)
+
+lvr = Table('MSE_latest_vs_recent', metadata,
+	Column('id', Integer, primary_key=True),
+	Column('domain_id', Integer, ForeignKey('domains.id'),nullable=False),
+	Column('added', Datetime, default=datetime.datetime.now()),
+	Column('score', Integer, nullable=False),
+	Column('latest_image_id', Integer, ForeighKey('images.id'),nullable=False)
+	Column('recent_image_id', Integer, ForeighKey('images.id'),nullable=False)
+)
+
+rvb = Table('MSE_recent_vs_base', metadata,
+	Column('id', Integer, primary_key=True),
+	Column('domain_id', Integer, ForeignKey('domains.id'),nullable=False),
+	Column('added', Datetime, default=datetime.datetime.now()),
+	Column('score', Integer, nullable=False),
+	Column('base_image_id', Integer, ForeighKey('images.id'),nullable=False)
+	Column('recent_image_id', Integer, ForeighKey('images.id'),nullable=False)
+)
+
+apiusers= Table('API_Users', metadata,
+	Column('id', Integer, primary_key=True),
+	Column('username', String, nullable=False),
+	Column('added', Datetime, default=datetime.datetime.now()),
+	Column('disabled', Boolean, default=False),
+	Column('auth_hash', String, default=make_random())
+)
+
+
+
+
+app = Flask(__name__)
+
+
+
+API_=API_PATH
+
+
+
+
+@app.route('/')
+def index():
+	return "Testing: Hello, World!"
+#/api/v1/domains
+#
+#     DOMAINS
+#
+#read domains
+@app.route(API_+'domains', methods=['GET'])
+def list_domains():
+	return jsonify('{}'), 201
+
+#create domain
+@app.route(API_+'domains', methods=['POST'])
+def add_domains():
+	return jsonify({''}), 201
+
+#delete a domain
+@app.route(API_+'domains/<domain>', methods=['DELETE'])
+def remove_domain():
+	return jsonify({''}), 201
+
+
+#
+# Results
+#
+
+
+@app.route(API_+'results',methods=['GET'])
+def list_results():
+	#only list the results of testing for the current day
+	return jsonify({''}), 201
+
+@app.route(API_+'results/<dtstring>',methods=['GET'])
+def list_specific_tasks(dtstring):
+	return jsonify({''}), 201
+
+
+#
+# images
+#
+
+
+#/api/v1/domain/$1/images -- list all images
+@app.route(API_+'images/<domain>',methods=['GET'])
+def images_by_domain(domain):
+	#return only a few per page
+	return jsonify({''}), 201
+
+@app.route(API_+'images/<sha256>',methods=['GET'])
+def images_by_hash(sha256):
+	return jsonify({''}),201
+
+@app.route(API_+'images/<dtstring>',methods=['GET'])
+def images_by_date(dtstring):
+		return jsonify({''}),201
+
+if __name__=='__main__':
+	app.run(debug=True)
